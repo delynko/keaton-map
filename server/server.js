@@ -35,20 +35,14 @@ io.on('connection', (socket) => {
                 console.log(err);
             } else {
                 console.log('Feature Inserted: ', feature);
-            }
-            
+            } 
         });
-
     })
     
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
-    
 });
-
-
-
 
 server.listen(port, () => {
     console.log(`listening on ${port}`)

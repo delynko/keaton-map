@@ -23,14 +23,11 @@ displayPoints();
 var coordinates;
 
 map.on('draw.create', (e) => {
-    
     coordinates = (e.features[0].geometry.coordinates);
-
     $('#input-form').removeClass('hidden');
 });
 
-
-function displayPoints() {
+function displayPoints(){
     $.get('/features', function(data) {
     
         for (i = 0; i < data.features.length; i++) {
@@ -48,11 +45,7 @@ function displayPoints() {
     });
 }
 
-
-
-$('#submit-button').on('click', (function (e) {
-    e.preventDefault();
-    
+function insertFeature(){
     var feature = {
         "type": "Feature",
         "properties": {
@@ -79,8 +72,9 @@ $('#submit-button').on('click', (function (e) {
     $('#town').val('');
     $('#state').val('');
     $('#date').val('');
-    setTimeout(function(){
-        location.reload();
-    },1000)
-    
+}
+
+$('#submit-button').on('click', (function (e) {
+    e.preventDefault();
+    insertFeature();
 }));

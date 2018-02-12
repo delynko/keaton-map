@@ -39,7 +39,7 @@ function displayPoints(){
             new mapboxgl.Marker(el)
             .setLngLat([data.features[i].geometry.coordinates[0], data.features[i].geometry.coordinates[1]])
             .setPopup(new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`Place: ${data.features[i].properties.POI_NAME}<br>Park or Area: ${data.features[i].properties.PARK}<br>Date Visited: ${data.features[i].properties.DATE_VISITED}`))
+            .setHTML(`Place: ${data.features[i].properties.POI_NAME}<br>Park or Area: ${data.features[i].properties.PARK}<br>Date Visited: ${data.features[i].properties.DATE_VISITED}<br>Story: ${data.features[i].properties.COMMENT}`))
             .addTo(map);
         };
     });

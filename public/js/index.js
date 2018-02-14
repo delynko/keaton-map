@@ -1,46 +1,51 @@
 var socket = io();
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiZGVseW5rbyIsImEiOiJjaXBwZ3hkeTUwM3VuZmxuY2Z5MmFqdnU2In0.ac8kWI1ValjdZBhlpMln3w';
-/* eslint-disable */
-var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/satellite-v9',
-    center: [-95.874, 40.760], // starting position
-    zoom: 3.5
+var mapboxStreets = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox.streets',
+    accessToken: 'pk.eyJ1IjoiZGVseW5rbyIsImEiOiJjaXBwZ3hkeTUwM3VuZmxuY2Z5MmFqdnU2In0.ac8kWI1ValjdZBhlpMln3w'
 });
 
-var draw = new MapboxDraw({
-    displayControlsDefault: false,
-    controls: {
-        point: true,
-        trash: true
-    }
+var map = L.map("map", {
+    maxZoom: 18,
+    layers: [mapboxStreets],
+}).setView([38.760, -95.874], 5);
+map.zoomControl.setPosition('topright');
+
+var drawControl = new L.Control.Draw({
+    draw: {
+        // remove unnecessary buttons
+        polyline: false,
+        circle: false,
+        rectangle: false,
+        polygon: false,
+        circlemarker:false
+    },
+    position: 'topright'
 });
-map.addControl(draw);
+
+// add draw control to map
+map.addControl(drawControl);
 
 displayPoints();
 
 var coordinates;
-
-map.on('draw.create', (e) => {
-    coordinates = (e.features[0].geometry.coordinates);
+map.on(L.Draw.Event.CREATED, function(e){
+    coordinates = [e.layer._latlng.lng, e.layer._latlng.lat];
     $('#input-form').removeClass('hidden');
 });
 
 function displayPoints(){
     $.get('/features', function(data) {
-    
+        
         for (i = 0; i < data.features.length; i++) {
-        
-            var el = document.createElement('div');
-            el.className = 'marker';
-            el.style.backgroundImage = 'url(images/marker.png';
-        
-            new mapboxgl.Marker(el)
-            .setLngLat([data.features[i].geometry.coordinates[0], data.features[i].geometry.coordinates[1]])
-            .setPopup(new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`Place: ${data.features[i].properties.POI_NAME}<br>Park or Area: ${data.features[i].properties.PARK}<br>Date Visited: ${data.features[i].properties.DATE_VISITED}<br>Story: ${data.features[i].properties.COMMENT}`))
+
+            L.marker([data.features[i].geometry.coordinates[1], data.features[i].geometry.coordinates[0]])
+            .bindPopup('test')
+            .setIcon(new L.icon({iconUrl: "/images/marker.png", iconSize: [20, 20]}))
             .addTo(map);
+            
         };
     });
 }

@@ -15,6 +15,19 @@ html, body, #map {
     cursor: pointer;
 }
 
+#input-form {
+    background-color: white;
+    padding: 10px;
+    z-index: 1000;
+    position: absolute;
+/*    height: 360px;*/
+    width: 220px;
+    top: 0;
+    margin-left: 20;
+    border:.5px solid #DDDDDD;
+    box-shadow:2px 2px 5px #DDDDDD;
+}
+
 #place, #park, #town, #state, #date, #comment {
     font-family: 'Noto Sans', sans-serif;
     border: .5px solid #DDDDDD;
@@ -41,16 +54,12 @@ html, body, #map {
     display:none
 }
 
-#input-form {
-    background-color: white;
-    padding: 10px;
-    z-index: 1;
-    position: absolute;
-    height: 360px;
-    width: 220px;
-    top: 0;
-    margin-left: 20;
-    border:.5px solid #DDDDDD;
-    box-shadow:2px 2px 5px #DDDDDD;
+
+
+p {
+    display: inline
 }
 
+#update, #delete {
+    cursor: pointer
+}

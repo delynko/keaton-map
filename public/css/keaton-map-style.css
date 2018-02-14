@@ -15,7 +15,7 @@ html, body, #map {
     cursor: pointer;
 }
 
-#input-form {
+#input-form, #update-form {
     background-color: white;
     padding: 10px;
     z-index: 1000;
@@ -28,7 +28,7 @@ html, body, #map {
     box-shadow:2px 2px 5px #DDDDDD;
 }
 
-#place, #park, #town, #state, #date, #comment {
+#place, #park, #town, #state, #date, #comment, #photo {
     font-family: 'Noto Sans', sans-serif;
     border: .5px solid #DDDDDD;
     margin-top: 10px;
@@ -40,7 +40,7 @@ html, body, #map {
     box-shadow: 2px 2px 5px #DDDDDD;
 }
 
-#submit-button {
+#submit-button, #update-button {
     margin-left: 27%;
     background-color:#a3c1ad;
     border-radius:5px;

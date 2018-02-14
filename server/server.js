@@ -37,6 +37,16 @@ io.on('connection', (socket) => {
                 console.log('Feature Inserted: ', feature);
             } 
         });
+    });
+    
+    socket.on('deleteFeature', (featureId) => {
+        client.deleteFeature(featureId, datasetId, function(err, feature) {
+            if (!err) {
+                console.log(featureId, 'deleted!');
+            } else {
+                console.log(err);
+            }
+        });
     })
     
     socket.on('disconnect', () => {

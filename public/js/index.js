@@ -31,6 +31,14 @@ map.addControl(drawControl);
 displayPoints();
 
 var coordinates;
+var id;
+var uplace;
+var upark;
+var utown;
+var ustate;
+var udate;
+var ustory;
+
 map.on(L.Draw.Event.CREATED, function(e){
     coordinates = [e.layer._latlng.lng, e.layer._latlng.lat];
     $('#input-form').removeClass('hidden');
@@ -40,11 +48,12 @@ function displayPoints(){
     $.get('/features', function(data) {
         console.log(data);
         for (i = 0; i < data.features.length; i++) {
-
-            L.marker([data.features[i].geometry.coordinates[1], data.features[i].geometry.coordinates[0]])
-            .bindPopup(`Place: ${data.features[i].properties.POI_NAME}<br>Park or Area: ${data.features[i].properties.PARK}<br>Closest Town: ${data.features[i].properties.TOWN}<br>State: ${data.features[i].properties.STATE}<br>Date: ${data.features[i].properties.DATE_VISITED}<br>${data.features[i].properties.COMMENT}`)
-            .setIcon(new L.icon({iconUrl: "/images/marker.png", iconSize: [20, 20]}))
-            .addTo(map);
+            
+            var point = L.marker([data.features[i].geometry.coordinates[1], data.features[i].geometry.coordinates[0]])
+            .bindPopup(`<p class="hidden" id="id">${data.features[i].id}</p>Place: ${data.features[i].properties.POI_NAME}<br>Park or Area: ${data.features[i].properties.PARK}<br>Closest Town: ${data.features[i].properties.TOWN}<br>State: ${data.features[i].properties.STATE}<br>Date: ${data.features[i].properties.DATE_VISITED}<br><a href="${data.features[i].properties.PHOTO}" target="_blank">Photo</a><br>${data.features[i].properties.COMMENT}<br><p id="delete">Delete</p>`)
+            .setIcon(new L.icon({iconUrl: "/images/marker.png", iconSize: [20, 20]}));
+            
+            map.addLayer(point);
             
         };
     });
@@ -59,6 +68,7 @@ function insertFeature(){
             "TOWN": $('#town').val(),
             "STATE": $('#state').val(),
             "DATE_VISITED": $('#date').val(),
+            "PHOTO": $('#photo').val(),
             "COMMENT": $('#comment').val()
             
         },
@@ -83,3 +93,21 @@ $('#submit-button').on('click', (function (e) {
     e.preventDefault();
     insertFeature();
 }));
+
+map.on('popupopen', function(e){
+
+    var dummy = document.createElement('div');
+    dummy.innerHTML = e.popup._content;
+    id = document.getElementById('id').innerHTML;
+    $('#delete').on('click', function(){
+        if (window.confirm("Are you sure you want to delete that?")) {
+            socket.emit('deleteFeature', id);
+        } else {
+            console.log('nothing happens');
+        }
+        
+        
+        
+    });
+});
+

@@ -38,11 +38,11 @@ map.on(L.Draw.Event.CREATED, function(e){
 
 function displayPoints(){
     $.get('/features', function(data) {
-        
+        console.log(data);
         for (i = 0; i < data.features.length; i++) {
 
             L.marker([data.features[i].geometry.coordinates[1], data.features[i].geometry.coordinates[0]])
-            .bindPopup('test')
+            .bindPopup(`Place: ${data.features[i].properties.POI_NAME}<br>Park or Area: ${data.features[i].properties.PARK}<br>Closest Town: ${data.features[i].properties.TOWN}<br>State: ${data.features[i].properties.STATE}<br>Date: ${data.features[i].properties.DATE_VISITED}<br>${data.features[i].properties.COMMENT}`)
             .setIcon(new L.icon({iconUrl: "/images/marker.png", iconSize: [20, 20]}))
             .addTo(map);
             

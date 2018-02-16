@@ -23,10 +23,8 @@ function displayPoints(){
             .bindPopup(`<p class="hidden" id="id">${data.features[i].id}</p>Place: ${data.features[i].properties.POI_NAME}<br>Park or Area: ${data.features[i].properties.PARK}<br>Closest Town: ${data.features[i].properties.TOWN}<br>State: ${data.features[i].properties.STATE}<br>Date: ${data.features[i].properties.DATE_VISITED}<br><a href="${data.features[i].properties.PHOTO}" target="_blank">Photo</a>`)
             .setIcon(new L.icon({iconUrl: "/images/marker.png", iconSize: [25, 25]}));
             
-            map.addLayer(point);
             
-            
-
+            var mapStates = [];
             for (s = 0; s < states.features.length; s++){
                 
                 if (states.features[s].properties.NAME === data.features[i].properties.STATE){
@@ -36,8 +34,14 @@ function displayPoints(){
                             fillOpacity: 0,
                             color: '#000000',
                             weight: 2
-                        }
-                    }).addTo(map);
+                        },
+                        interactive: false
+                    });
+                    
+                    if (!mapStates.includes(states.features[s].properties.NAME)) {
+                        state.addTo(map);
+                        mapStates.push(states.features[s].properties.NAME);
+                    }
                 }
             }
             

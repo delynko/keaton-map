@@ -25,7 +25,22 @@ function displayPoints(){
             
             map.addLayer(point);
             
+            
+
+            for (s = 0; s < states.features.length; s++){
+                
+                if (states.features[s].properties.NAME === data.features[i].properties.STATE){
+                    console.log(states.features[s]);
+                    var state = L.geoJSON(states.features[s], {
+                        style: {
+                            fillOpacity: 0,
+                            color: '#000000',
+                            weight: 2
+                        }
+                    }).addTo(map);
+                }
+            }
+            
         };
     });
 }
-

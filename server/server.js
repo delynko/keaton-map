@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const MapboxClient = require('mapbox');
 const path = require('path');
@@ -7,8 +8,8 @@ const hbs = require('hbs');
 
 const port = process.env.PORT || 3000;
 
-const datasetId = 'cjasgyc0v4rm231nqyggugkhi';
-const client = new MapboxClient('sk.eyJ1IjoiZGVseW5rbyIsImEiOiJjamRrZnE4MDcwMDZjMzNsaTlianVmN3M5In0._Y9-xKDfWDu3vD0tKMpysQ');
+const datasetId = process.env.DATASET_ID;
+const client = new MapboxClient(process.env.MAPBOX_PRIVATE);
 
 
 var app = express();

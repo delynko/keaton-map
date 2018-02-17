@@ -105,9 +105,6 @@ map.on('popupopen', function(e){
         } else {
             console.log('nothing happens');
         }
-        
-        
-        
     });
 });
 

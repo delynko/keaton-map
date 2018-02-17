@@ -87,6 +87,8 @@ function insertFeature(){
     $('#town').val('');
     $('#state').val('');
     $('#date').val('');
+    $('#photo').val('');
+    $('#comment').val('')
 }
 
 $('#submit-button').on('click', (function (e) {

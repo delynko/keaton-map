@@ -21,10 +21,9 @@ function displayPoints(){
             
             var point = L.marker([data.features[i].geometry.coordinates[1], data.features[i].geometry.coordinates[0]])
             .bindPopup(`<p class="hidden" id="id">${data.features[i].id}</p>Place: ${data.features[i].properties.POI_NAME}<br>Park or Area: ${data.features[i].properties.PARK}<br>Closest Town: ${data.features[i].properties.TOWN}<br>State: ${data.features[i].properties.STATE}<br>Date: ${data.features[i].properties.DATE_VISITED}<br><img src="${data.features[i].properties.PHOTO}"><br>${data.features[i].properties.COMMENT}`, {
-                maxWidth: 'auto',
+                maxWidth: 'auto'
             })
             .setIcon(new L.icon({iconUrl: "/images/marker.png", iconSize: [25, 25]}));
-            console.log(data.features[i].properties.PHOTO);
             map.addLayer(point);
             
             var mapStates = [];

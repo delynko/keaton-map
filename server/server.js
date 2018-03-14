@@ -26,6 +26,7 @@ hbs.registerPartials(path.resolve(__dirname, '../views/partials'));
 app.get('/', (req, res) => {
     res.render('index.hbs', {
         title: 'Keaton\'s Places Map',
+        googleApiKey: `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLEAPIKEY}&callback=initMap`,
         jScript: '/js/index.js',
     });
 });

@@ -1,51 +1,52 @@
 var socket = io();
 
-var mapboxStreets = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-    attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18,
-    id: 'mapbox.streets',
-    accessToken: 'pk.eyJ1IjoiZGVseW5rbyIsImEiOiJjaXBwZ3hkeTUwM3VuZmxuY2Z5MmFqdnU2In0.ac8kWI1ValjdZBhlpMln3w'
-});
+let map;
 
-var map = L.map("map", {
-    maxZoom: 18,
-    layers: [mapboxStreets],
-}).setView([38.760, -95.874], 5);
-map.zoomControl.setPosition('topright');
+function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 38.760, lng: -95.874},
+        zoom: 5
+    });
 
-displayPoints();
+    displayPoints();
+
+} 
 
 function displayPoints(){
     $.get('/features', function(data) {
-        for (i = 0; i < data.features.length; i++) {
+        let mapStates = [];
+        for (let i = 0; i < data.features.length; i++) {
+
+            const coords = {lat: data.features[i].geometry.coordinates[1], lng: data.features[i].geometry.coordinates[0]};
+
+            const content = 
+                `<div>
+                    <p>Place: ${data.features[i].properties.POI_NAME}</p><br>
+                    <p>Park or Area: ${data.features[i].properties.PARK}</p><br>
+                    <p>Closest Town: ${data.features[i].properties.TOWN}</p><br>
+                    <p>State: ${data.features[i].properties.STATE}</p><br>
+                    <p>Date: ${data.features[i].properties.DATE_VISITED}</p><br>
+                    <img src="${data.features[i].properties.PHOTO}"><br>
+                    <p>${data.features[i].properties.COMMENT}</p>
+                </div>`
+            ;
             
-            var point = L.marker([data.features[i].geometry.coordinates[1], data.features[i].geometry.coordinates[0]])
-            .bindPopup(`<p class="hidden" id="id">${data.features[i].id}</p>Place: ${data.features[i].properties.POI_NAME}<br>Park or Area: ${data.features[i].properties.PARK}<br>Closest Town: ${data.features[i].properties.TOWN}<br>State: ${data.features[i].properties.STATE}<br>Date: ${data.features[i].properties.DATE_VISITED}<br><img src="${data.features[i].properties.PHOTO}"><br>${data.features[i].properties.COMMENT}`, {
-                maxWidth: 'auto'
-            })
-            .setIcon(new L.icon({iconUrl: "/images/marker.png", iconSize: [25, 25]}));
-            map.addLayer(point);
+            const infowindow = new google.maps.InfoWindow({content});
             
-            var mapStates = [];
-            for (s = 0; s < states.features.length; s++){
-                
-                if (states.features[s].properties.NAME === data.features[i].properties.STATE){
-                    var state = L.geoJSON(states.features[s], {
-                        style: {
-                            fillOpacity: 0,
-                            color: '#000000',
-                            weight: 2
-                        },
-                        interactive: false
-                    });
-                    
-                    if (!mapStates.includes(states.features[s].properties.NAME)) {
-                        state.addTo(map);
-                        mapStates.push(states.features[s].properties.NAME);
-                    }
-                }
+            const icon = {
+                url: '/images/marker.png',
+                scaledSize: new google.maps.Size(25, 25)
             }
-            
-        };
+
+            const marker = new google.maps.Marker({
+                position: coords,
+                map: map,
+                icon: icon
+            });
+
+            marker.addListener('click', function(){
+                infowindow.open(map, marker);
+            });
+        }
     });
 }

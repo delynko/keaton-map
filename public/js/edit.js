@@ -1,35 +1,5 @@
 var socket = io();
 
-var mapboxStreets = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-    attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18,
-    id: 'mapbox.streets',
-    accessToken: 'pk.eyJ1IjoiZGVseW5rbyIsImEiOiJjaXBwZ3hkeTUwM3VuZmxuY2Z5MmFqdnU2In0.ac8kWI1ValjdZBhlpMln3w'
-});
-
-var map = L.map("map", {
-    maxZoom: 18,
-    layers: [mapboxStreets],
-}).setView([38.760, -95.874], 5);
-map.zoomControl.setPosition('topright');
-
-var drawControl = new L.Control.Draw({
-    draw: {
-        // remove unnecessary buttons
-        polyline: false,
-        circle: false,
-        rectangle: false,
-        polygon: false,
-        circlemarker:false
-    },
-    position: 'topright'
-});
-
-// add draw control to map
-map.addControl(drawControl);
-
-displayPoints();
-
 var coordinates;
 var id;
 var uplace;
@@ -39,23 +9,83 @@ var ustate;
 var udate;
 var ustory;
 
-map.on(L.Draw.Event.CREATED, function(e){
-    coordinates = [e.layer._latlng.lng, e.layer._latlng.lat];
-    $('#input-form').removeClass('hidden');
-});
+function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 38.760, lng: -95.874},
+        zoom: 5
+    });
+
+    var drawingManager = new google.maps.drawing.DrawingManager({
+        drawingMode: google.maps.drawing.OverlayType.MARKER,
+        drawingControl: true,
+        drawingControlOptions: {
+          position: google.maps.ControlPosition.TOP_RIGHT,
+          drawingModes: ['marker']
+        },
+        markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
+        circleOptions: {
+          fillColor: '#ffff00',
+          fillOpacity: 1,
+          strokeWeight: 5,
+          clickable: false,
+          editable: true,
+          zIndex: 1
+        }
+    });
+    drawingManager.setMap(map);
+
+    google.maps.event.addListener(drawingManager, 'markercomplete', function(marker) {
+        coordinates = [marker.getPosition().lng(), marker.getPosition().lat()];
+        $('#input-form').removeClass('hidden');
+    });
+    displayPoints();
+}
 
 function displayPoints(){
     $.get('/features', function(data) {
+        let mapStates = [];
+        for (let i = 0; i < data.features.length; i++) {
 
-        for (i = 0; i < data.features.length; i++) {
+            const coords = {lat: data.features[i].geometry.coordinates[1], lng: data.features[i].geometry.coordinates[0]};
+
+            const content = 
+                `<div>
+                    <p>Place: ${data.features[i].properties.POI_NAME}</p><br>
+                    <p>Park or Area: ${data.features[i].properties.PARK}</p><br>
+                    <p>Closest Town: ${data.features[i].properties.TOWN}</p><br>
+                    <p>State: ${data.features[i].properties.STATE}</p><br>
+                    <p>Date: ${data.features[i].properties.DATE_VISITED}</p><br>
+                    <a href="${data.features[i].properties.PHOTO}">"${data.features[i].properties.PHOTO}"</a><br>
+                    <p>${data.features[i].properties.COMMENT}</p><br>
+                    <p id="delete"><em>Delete</em></p>
+                </div>`
+            ;
             
-            var point = L.marker([data.features[i].geometry.coordinates[1], data.features[i].geometry.coordinates[0]])
-            .bindPopup(`<p class="hidden" id="id">${data.features[i].id}</p>Place: ${data.features[i].properties.POI_NAME}<br>Park or Area: ${data.features[i].properties.PARK}<br>Closest Town: ${data.features[i].properties.TOWN}<br>State: ${data.features[i].properties.STATE}<br>Date: ${data.features[i].properties.DATE_VISITED}<br><a href="${data.features[i].properties.PHOTO}" target="_blank">Photo</a><br>${data.features[i].properties.COMMENT}<br><p id="delete"><em>Delete</em></p>`)
-            .setIcon(new L.icon({iconUrl: "/images/marker.png", iconSize: [25, 25]}));
+            const infowindow = new google.maps.InfoWindow({content});
             
-            map.addLayer(point);
-            
-        };
+            const icon = {
+                url: '/images/marker.png',
+                scaledSize: new google.maps.Size(25, 25)
+            }
+
+            const marker = new google.maps.Marker({
+                position: coords,
+                map: map,
+                icon: icon
+            });
+
+            marker.addListener('click', function(e){
+                infowindow.open(map, marker);
+                id = `${data.features[i].id}`
+                $('#delete').on('click', function(){
+                    if (window.confirm("Are you sure you want to delete that?")) {
+                        socket.emit('deleteFeature', id);
+                    } else {
+                        console.log('nothing happens');
+                    }
+                });
+            });
+        }
     });
 }
 
@@ -95,20 +125,3 @@ $('#submit-button').on('click', (function (e) {
     e.preventDefault();
     insertFeature();
 }));
-
-map.on('popupopen', function(e){
-    
-    console.log(e);
-
-    var dummy = document.createElement('div');
-    dummy.innerHTML = e.popup._content;
-    id = document.getElementById('id').innerHTML;
-    $('#delete').on('click', function(){
-        if (window.confirm("Are you sure you want to delete that?")) {
-            socket.emit('deleteFeature', id);
-        } else {
-            console.log('nothing happens');
-        }
-    });
-});
-

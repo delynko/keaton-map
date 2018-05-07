@@ -7,7 +7,6 @@ html, body, #map {
     margin: 0
 }
 .marker {
-
     background-size: cover;
     width: 25px;
     height: 25px;

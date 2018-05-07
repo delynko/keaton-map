@@ -34,6 +34,7 @@ app.get('/', (req, res) => {
 app.get('/edit', (req, res) => {
     res.render('edit.hbs', {
         title: 'Keaton Map Edit',
+        googleApiKey: `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLEAPIKEY}&libraries=drawing&callback=initMap`,
         jScript: '/js/edit.js',
     });
 });

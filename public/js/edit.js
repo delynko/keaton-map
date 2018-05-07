@@ -57,6 +57,7 @@ function displayPoints(){
                     <p>Date: ${data.features[i].properties.DATE_VISITED}</p><br>
                     <a href="${data.features[i].properties.PHOTO}">"${data.features[i].properties.PHOTO}"</a><br>
                     <p>${data.features[i].properties.COMMENT}</p><br>
+                    <p id="${data.features[i].id}">ID: ${data.features[i].id}</p><br>
                     <p id="delete"><em>Delete</em></p>
                 </div>`
             ;
